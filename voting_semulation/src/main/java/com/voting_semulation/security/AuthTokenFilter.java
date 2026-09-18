@@ -29,6 +29,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		String header = request.getHeader("Authorization");
+
+
 		if (header != null && header.startsWith("Bearer ")) {
 
 			String jwt = header.substring(7);
@@ -48,8 +50,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 				}
 			}
 
-			filterChain.doFilter(request, response);
+
 		}
+
+
+        filterChain.doFilter(request, response);
+
 
 	}
 }

@@ -9,7 +9,7 @@ public class DTOs {
 	
 	public record LoginRequest(String email,String password) {}
 	
-	public record AuthResponce(String token , Long userId,String name,String emial,String role) {}
+	public record AuthResponce(String token , Long userId,String name,String email,String role) {}
 	
 //	public record ElectionRequest( String title, String description,  LocalDateTime startAt,  LocalDateTime endAt) {}
 //    public record ElectionResponse(Long id, String title, String description, String status, LocalDateTime startAt, LocalDateTime endAt, boolean simulationMode) {}

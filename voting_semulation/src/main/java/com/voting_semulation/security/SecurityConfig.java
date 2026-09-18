@@ -53,7 +53,7 @@ public class SecurityConfig {
 	http.cors(cors-> cors.configurationSource(corsConfigurationSource()))
 		.csrf(AbstractHttpConfigurer::disable)
 		.sessionManagement(s-> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authorizeHttpRequests(auth-> auth.requestMatchers("/api/v1/auth/**").permitAll()
+		.authorizeHttpRequests(auth-> auth.requestMatchers("/api/users/**").permitAll()
 				                           .requestMatchers(HttpMethod.GET,"/api/v1/elections/**").authenticated()
 				                           .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 				                           .anyRequest().authenticated()
