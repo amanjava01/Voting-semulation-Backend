@@ -13,49 +13,41 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(ApiException.class)
+	public ResponseEntity<Map<String, Object>> handleApiException(ApiException ae) {
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<Map<String,Object>> handleApiException(ApiException ae){
+		Map<String, Object> error = new HashMap<>();
 
+		error.put("timestamp", LocalDateTime.now());
+		error.put("status", ae.getStatus().value());
+		error.put("code", ae.getCode());
+		error.put("message", ae.getMessage());
+		return new ResponseEntity<>(error, ae.getStatus());
+	}
 
-        Map<String ,Object> error= new HashMap<>();
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Map<String, Object>> handlevalidationException(MethodArgumentNotValidException me) {
 
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status",ae.getStatus().value());
-        error.put("code",ae.getCode());
-        error.put("message",ae.getMessage());
-        return new ResponseEntity<>(error,ae.getStatus());
-    }
+		Map<String, Object> error = new HashMap<>();
 
+		error.put("timestamp", LocalDateTime.now());
+		error.put("status", HttpStatus.BAD_REQUEST.value());
+		error.put("code", "validation_error");
+		error.put("Message", me.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,Object>> handlevalidationException(MethodArgumentNotValidException me){
+	}
 
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Map<String, Object>> handleGeneralException(Exception e) {
 
-        Map<String , Object> error=new HashMap<>();
+		Map<String, Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		error.put("code", "internal_server_error");
+		error.put("message", e.getMessage());
+		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 
-        error.put("timestamp",LocalDateTime.now());
-        error.put("status", HttpStatus.BAD_REQUEST.value());
-        error.put("code","validation_error");
-        error.put("Message",me.getBindingResult().getAllErrors().get(0).getDefaultMessage());
-        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
-
-
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String,Object>> handleGeneralException(Exception e){
-
-         Map<String,Object> error = new HashMap<>();
-         error.put("timestamp",LocalDateTime.now());
-            error.put("status",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            error.put("code","internal_server_error");
-            error.put("message",e.getMessage());
-            return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
-
-
-    }
-
-
+	}
 
 }

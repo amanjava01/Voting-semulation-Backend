@@ -16,42 +16,40 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private JwtUtils jwtUtils;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-        String header= request.getHeader("Authorization");
-        if(header !=null && header.startsWith("Bearer ")){
+		String header = request.getHeader("Authorization");
+		if (header != null && header.startsWith("Bearer ")) {
 
-            String jwt= header.substring(7);
+			String jwt = header.substring(7);
 
-            if(jwtUtils.validateToken(jwt)){
+			if (jwtUtils.validateToken(jwt)) {
 
-                String email= jwtUtils.getEmailFromToken(jwt);
+				String email = jwtUtils.getEmailFromToken(jwt);
 
-                User user= userRepository.findByEmail(email).orElse(null);
+				User user = userRepository.findByEmail(email).orElse(null);
 
+				if (user != null && "ACTIVE".equalsIgnoreCase(user.getStatus())) {
 
-                if(user!=null && "ACTIVE".equalsIgnoreCase(user.getStatus())){
+					var auth = new UsernamePasswordAuthenticationToken(user, null,
+							List.of(new SimpleGrantedAuthority(user.getRole().getName())));
+					auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(auth);
+				}
+			}
 
-                    var auth= new UsernamePasswordAuthenticationToken(user, null, List.of(new SimpleGrantedAuthority(user.getRole().getName())));
-                   auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                              SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-            }
+			filterChain.doFilter(request, response);
+		}
 
-
-            filterChain.doFilter(request, response);
-        }
-
-
-
-
-    }
+	}
 }
