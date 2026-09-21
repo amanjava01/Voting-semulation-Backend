@@ -62,6 +62,9 @@ public class AuthService {
 
 	}
 	
+	
+	// methods for login
+	
 	public AuthResponce login (LoginRequest req) {
 		
 		User user = userRepository.findByEmail(req.email())
